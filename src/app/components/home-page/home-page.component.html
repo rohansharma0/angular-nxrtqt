@@ -1,0 +1,76 @@
+<div class="container-fluid drop">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <select
+      class="form-select"
+      id="teamName"
+      name="teamName"
+      formControlName="teamName"
+    >
+      <ng-container *ngFor="let team of teams">
+        <option value="{{ team.id }}">{{ team.full_name }}</option>
+      </ng-container>
+    </select>
+    <button type="submit" class="btn btn-primary">Track Team</button>
+  </form>
+
+  <div *ngFor="let teamData of teamsDataList">
+    <div class="card">
+      <div class="card-header">
+        <p>{{ teamData.team.full_name }}[{{ teamData.team.abbreviation }}]</p>
+        <button type="button" class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-8">
+            <div>
+              Results of past 12 days
+              <ng-container *ngFor="let result of teamData.results">
+                <div
+                  *ngIf="
+                    result.home_team.id === teamData.team.id;
+                    else elseBlock
+                  "
+                >
+                  <p
+                    *ngIf="
+                      result.home_team_score > result.visitor_team_score;
+                      else elseAwayBlock
+                    "
+                  >
+                    WIN
+                  </p>
+                  <ng-template #elseAwayBlock>
+                    <p>LOSS</p>
+                  </ng-template>
+                </div>
+                <ng-template #elseBlock>
+                  <div>
+                    <p
+                      *ngIf="
+                        result.home_team_score > result.visitor_team_score;
+                        else elseAwayBlock
+                      "
+                    >
+                      WIN
+                    </p>
+                    <ng-template #elseAwayBlock>
+                      <p>LOSS</p>
+                    </ng-template>
+                  </div>
+                </ng-template>
+              </ng-container>
+            </div>
+            <div>Avg pts scored:{{ teamData.avgPointScored }}</div>
+            <div>Avg pts conceded:{{ teamData.avgPointConceded }}</div>
+          </div>
+          <div class="col-4"></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary">See game Results >></button>
+      </div>
+    </div>
+  </div>
+</div>
