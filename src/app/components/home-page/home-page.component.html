@@ -17,7 +17,12 @@
     <div class="card">
       <div class="card-header">
         <p>{{ teamData.team.full_name }}[{{ teamData.team.abbreviation }}]</p>
-        <button type="button" class="close" aria-label="Close">
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          (click)="remove(teamData.team.id)"
+        >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -69,7 +74,15 @@
         </div>
       </div>
       <div class="card-footer">
-        <button class="btn btn-primary">See game Results >></button>
+        <!-- <a
+          [routerLink]="['/results', teamData.team.abbreviation]"
+          id="{{ 'results' + teamData.team.abbreviation }}"
+          >See game Results
+        </a> -->
+
+        <button (click)="sendToResultPage(teamData.team.id)">
+          See game Results
+        </button>
       </div>
     </div>
   </div>

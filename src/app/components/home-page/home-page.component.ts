@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validator } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Team } from '../../model/team';
 import { TeamData } from '../../model/team-data';
 import { RapidApiService } from '../../services/rapid-api.service';
@@ -10,7 +11,7 @@ import { RapidApiService } from '../../services/rapid-api.service';
   styleUrls: ['./home-page.component.css'],
 })
 export class HomePageComponent implements OnInit {
-  constructor(private rapidAPi: RapidApiService) {}
+  constructor(private rapidAPi: RapidApiService, private router: Router) {}
 
   teams: Team[] = [];
 
@@ -20,6 +21,20 @@ export class HomePageComponent implements OnInit {
     teamName: new FormControl('1'),
   });
 
+  remove(id: number) {
+    this.teamsDataList = this.teamsDataList.filter((teamData) => {
+      return teamData.team.id !== id;
+    });
+    localStorage.setItem('teamDataList', JSON.stringify(this.teamsDataList));
+  }
+  sendToResultPage(id: number) {
+    let teamData: TeamData = this.teamsDataList.find(
+      (teamData) => teamData.team.id === id
+    );
+    this.router.navigateByUrl(`results/${teamData.team.abbreviation}`, {
+      state: { teamData: teamData },
+    });
+  }
   onSubmit() {
     let id = this.form.get('teamName').value;
 
@@ -30,7 +45,6 @@ export class HomePageComponent implements OnInit {
       this.teams.forEach((team: Team) => {
         if (team.id === Number(id)) {
           teamData.team = team;
-          console.log(team);
         }
       });
 
@@ -56,10 +70,22 @@ export class HomePageComponent implements OnInit {
 
       this.teamsDataList.push(teamData);
       console.log(this.teamsDataList);
+
+      localStorage.setItem('teamDataList', JSON.stringify(this.teamsDataList));
     });
   }
   ngOnInit(): void {
     this.loadTeams();
+    this.loadTeamData();
+  }
+
+  loadTeamData() {
+    let storedTeamDataList = localStorage.getItem('teamDataList');
+    if (storedTeamDataList === null) {
+      localStorage.setItem('teamDataList', JSON.stringify([]));
+    } else {
+      this.teamsDataList = JSON.parse(storedTeamDataList);
+    }
   }
 
   loadTeams() {
